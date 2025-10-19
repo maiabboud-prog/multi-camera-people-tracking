@@ -113,15 +113,23 @@ def main(cfg):
                                 "id": value["id"],
                                 "cls_name": value["cls_name"],
                                 "color": value["color"],
-                                "score": distance.cosine(
-                                    np.expand_dims(
-                                        np.mean(value["extracted_features"], axis=0),
-                                        axis=0,
-                                    )
+
+                                # "score": distance.cosine(
+                                #     np.expand_dims(
+                                #         np.mean(value["extracted_features"], axis=0),
+                                #         axis=0,
+                                #     )
+                                #     if len(value["extracted_features"]) > 1
+                                #     else value["extracted_features"],
+                                #     extracted_features,
+                                # ),
+                                "score" : distance.cosine(
+                                    np.mean(value["extracted_features"], axis=0).flatten()
                                     if len(value["extracted_features"]) > 1
-                                    else value["extracted_features"],
-                                    extracted_features,
+                                    else value["extracted_features"].flatten(),
+                                    extracted_features.flatten(),
                                 ),
+
                             }
                             for value in detected_persons.values()
                         ]
