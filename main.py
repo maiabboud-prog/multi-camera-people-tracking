@@ -29,14 +29,50 @@ def main(cfg):
         device=cfg["inference_model_device"],
     )
 
+    # # Setup camera videos
+    # cam = {}
+    # videos = np.array(os.listdir(cfg["video_path"]))
+    # total_cam = len(videos)
+    # for i in range(total_cam):
+    #     cam[f"cam_{i}"] = cv2.VideoCapture(os.path.join(cfg["video_path"], videos[i]))
+    #     cam[f"cam_{i}"].set(3, cfg["size_each_camera_image"][0])
+    #     cam[f"cam_{i}"].set(4, cfg["size_each_camera_image"][1])
+    
     # Setup camera
     cam = {}
-    videos = np.array(os.listdir(cfg["video_path"]))
-    total_cam = len(videos)
+    
+    # --- MODIFICATION START ---
+    # Get the list of camera sources from the configuration (e.g., [0, 1] or ['rtsp://...', 0])
+    camera_sources = cfg["camera_sources"] 
+    total_cam = len(camera_sources)
+    
     for i in range(total_cam):
-        cam[f"cam_{i}"] = cv2.VideoCapture(os.path.join(cfg["video_path"], videos[i]))
+        source = camera_sources[i]
+        
+        # cv2.VideoCapture can take a device ID (int) or a video file/stream path (str)
+        # Assuming the sources in your config are correct identifiers for cv2.VideoCapture
+        cap = cv2.VideoCapture(source)
+        
+        # Check if the camera opened successfully
+        if not cap.isOpened():
+             print(f"Warning: Could not open camera source {source}. Skipping this source.")
+             continue # Skip to the next camera if this one failed
+             
+        cam[f"cam_{i}"] = cap
+        # Set resolution (optional, may not be supported by all cameras/drivers)
         cam[f"cam_{i}"].set(3, cfg["size_each_camera_image"][0])
         cam[f"cam_{i}"].set(4, cfg["size_each_camera_image"][1])
+    # --- MODIFICATION END ---
+    
+    # Check if any camera was successfully opened
+    if total_cam == 0 or len(cam) == 0:
+        print("Error: No camera sources were successfully opened. Please check your configuration.")
+        return # Exit the main function
+
+    # Re-calculate total_cam based on successfully opened cameras, if needed
+    total_cam = len(cam)
+    camera_keys = list(cam.keys()) # Store keys for reliable iteration
+    
     if cfg["save_video_camera_tracking"]:
         out = cv2.VideoWriter(
             os.path.join(

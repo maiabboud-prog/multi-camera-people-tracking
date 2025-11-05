@@ -1,9 +1,15 @@
-video_path: "./sample_video/video_1"
+# video_path: "./sample_video/videos2"
+# config.yaml (Corrected Style)
+# Assuming 'camera_sources' is the key on line 2
+camera_sources: 
+  - "rtsp://admin:1234567a@192.168.1.107:554/cam/realmonitor?channel=1&subtype=1" 
+  - "rtsp://admin:1234567a@192.168.1.108:554/cam/realmonitor?channel=1&subtype=1"
 object_detection_model_path: "./pretrained_models/yolov4-tiny.onnx"
 object_detection_classes_path: "./pretrained_models/coco.names"
-feature_extraction_model_path: "./pretrained_models/osnet_ain_x1_0_M.onnx"
-size_each_camera_image: [640, 480]
-resize_all_camera_image: 0.8
+feature_extraction_model_path: "./pretrained_models/osnet_ain_x1_0_MS.onnx"
+#size_each_camera_image: [640, 480]
+size_each_camera_image: [352, 288]
+resize_all_camera_image: 1
 object_detection_threshold: 0.7
 feature_extraction_threshold: 0.42
 inference_model_device: "cpu"
